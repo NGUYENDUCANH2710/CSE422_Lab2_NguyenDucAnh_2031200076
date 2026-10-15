@@ -1,0 +1,104 @@
+@model IEnumerable<DeviceManagement.Models.Device>
+@{
+    ViewData["Title"] = $"Devices in Category: {ViewBag.CategoryName}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a asp-controller="Categories" asp-action="Index">Categories</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewBag.CategoryName</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-folder2-open text-primary me-2"></i>Devices in Category: <span class="text-primary">@ViewBag.CategoryName</span>
+        </h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Devices" asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add Device
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Categories
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3" style="width: 15%;">Device Code</th>
+                        <th style="width: 25%;">Device Name</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 15%;">Date of Entry</th>
+                        <th style="width: 15%;">Assigned User</th>
+                        <th style="width: 15%;" class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No devices found in this category.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var device in Model)
+                        {
+                            <tr>
+                                <td class="ps-3">
+                                    <span class="badge bg-secondary font-monospace">@device.Code</span>
+                                </td>
+                                <td class="fw-semibold">@device.Name</td>
+                                <td>
+                                    @if (device.Status == DeviceManagement.Models.DeviceStatus.InUse)
+                                    {
+                                        <span class="badge badge-inuse"><i class="bi bi-check-circle me-1"></i>In use</span>
+                                    }
+                                    else if (device.Status == DeviceManagement.Models.DeviceStatus.Broken)
+                                    {
+                                        <span class="badge badge-broken"><i class="bi bi-x-circle me-1"></i>Broken</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-maintenance"><i class="bi bi-wrench me-1"></i>Under maintenance</span>
+                                    }
+                                </td>
+                                <td>@device.EntryDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    @if (device.User != null)
+                                    {
+                                        <span><i class="bi bi-person me-1"></i>@device.User.FullName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">— Unassigned —</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3 action-btns">
+                                    <a asp-controller="Devices" asp-action="Details" asp-route-id="@device.Id" class="btn btn-sm btn-outline-secondary" title="Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-controller="Devices" asp-action="Edit" asp-route-id="@device.Id" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-controller="Devices" asp-action="Delete" asp-route-id="@device.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

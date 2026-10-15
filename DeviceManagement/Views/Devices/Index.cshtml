@@ -1,0 +1,158 @@
+@model DeviceManagement.Models.ViewModels.DeviceFilterViewModel
+@{
+    ViewData["Title"] = "Devices List";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-laptop text-primary me-2"></i>Device Management</h2>
+        <p class="text-secondary mb-0">Search, filter, and manage organizational devices and hardware.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary shadow-sm">
+        <i class="bi bi-plus-circle me-1"></i> Add Device
+    </a>
+</div>
+
+<!-- Search & Filter Card (Requirement 4) -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-white rounded">
+        <form method="get" asp-action="Index" class="row g-3 align-items-end">
+            <!-- Search by Name or Code -->
+            <div class="col-md-4">
+                <label class="form-label fw-semibold small text-uppercase text-muted">Search Name / Code</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Search by name or code..." />
+                </div>
+            </div>
+
+            <!-- Filter by Category -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold small text-uppercase text-muted">Category</label>
+                <select name="categoryId" class="form-select" asp-items="Model.CategoryList">
+                    <option value="">-- All Categories --</option>
+                </select>
+            </div>
+
+            <!-- Filter by Status -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold small text-uppercase text-muted">Status</label>
+                <select name="status" class="form-select" asp-items="Model.StatusList">
+                    <option value="">-- All Statuses --</option>
+                </select>
+            </div>
+
+            <!-- Actions: Filter and Clear -->
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-funnel me-1"></i> Filter
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary" title="Reset Filters">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Device List Table -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Showing <strong>@Model.TotalCount</strong> device(s)</span>
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.CategoryId.HasValue || Model.Status.HasValue)
+        {
+            <span class="badge bg-info-subtle text-info-emphasis border">Filtered Results</span>
+        }
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3" style="width: 14%;">Device Code</th>
+                        <th style="width: 24%;">Device Name</th>
+                        <th style="width: 16%;">Category</th>
+                        <th style="width: 14%;">Status</th>
+                        <th style="width: 12%;">Date of Entry</th>
+                        <th style="width: 12%;">Assigned User</th>
+                        <th style="width: 8%;" class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Devices.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-1 d-block mb-2"></i>
+                                No devices matched your search and filter criteria.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.Devices)
+                        {
+                            <tr>
+                                <td class="ps-3">
+                                    <span class="badge bg-secondary font-monospace">@item.Code</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">@item.Name</span>
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    {
+                                        <div class="small text-muted text-truncate" style="max-width: 250px;">@item.Description</div>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Categories" asp-action="Devices" asp-route-id="@item.CategoryId" class="text-decoration-none">
+                                        <span class="badge bg-primary-subtle text-primary-emphasis border">
+                                            <i class="bi bi-tag me-1"></i>@item.Category?.Name
+                                        </span>
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (item.Status == DeviceManagement.Models.DeviceStatus.InUse)
+                                    {
+                                        <span class="badge badge-inuse"><i class="bi bi-check-circle me-1"></i>In use</span>
+                                    }
+                                    else if (item.Status == DeviceManagement.Models.DeviceStatus.Broken)
+                                    {
+                                        <span class="badge badge-broken"><i class="bi bi-x-circle me-1"></i>Broken</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-maintenance"><i class="bi bi-wrench me-1"></i>Under maintenance</span>
+                                    }
+                                </td>
+                                <td>@item.EntryDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    @if (item.User != null)
+                                    {
+                                        <a asp-controller="Users" asp-action="Details" asp-route-id="@item.UserId" class="text-decoration-none text-dark">
+                                            <i class="bi bi-person me-1"></i>@item.User.FullName
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">— Unassigned —</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3 action-btns text-nowrap">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

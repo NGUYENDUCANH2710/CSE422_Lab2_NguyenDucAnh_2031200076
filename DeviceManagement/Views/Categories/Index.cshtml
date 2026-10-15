@@ -1,0 +1,72 @@
+@model IEnumerable<DeviceManagement.Models.DeviceCategory>
+@{
+    ViewData["Title"] = "Device Categories";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-tags text-primary me-2"></i>Device Categories</h2>
+        <p class="text-secondary mb-0">Manage hardware equipment categories and groups.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary shadow-sm">
+        <i class="bi bi-plus-circle me-1"></i> Add Category
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3" style="width: 25%;">Category Name</th>
+                        <th style="width: 40%;">Description</th>
+                        <th style="width: 15%;" class="text-center">Total Devices</th>
+                        <th style="width: 20%;" class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                No categories found. Click "Add Category" to create one.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-semibold">
+                                    <i class="bi bi-folder2-open text-primary me-2"></i>@item.Name
+                                </td>
+                                <td class="text-secondary">
+                                    @(string.IsNullOrEmpty(item.Description) ? "— No description —" : item.Description)
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill px-3 py-2 fw-semibold">
+                                        @item.Devices.Count device(s)
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3 action-btns">
+                                    <a asp-action="Devices" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="View Devices in this Category">
+                                        <i class="bi bi-list-ul me-1"></i>Devices
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit Category">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete Category">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

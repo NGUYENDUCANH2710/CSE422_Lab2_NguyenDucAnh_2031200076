@@ -1,0 +1,61 @@
+@model DeviceManagement.Models.Device
+@{
+    ViewData["Title"] = $"Delete Device - {Model.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm border-top border-danger border-4">
+            <div class="card-header bg-white py-3 border-0">
+                <h4 class="fw-bold text-danger mb-0"><i class="bi bi-trash me-2"></i>Delete Device</h4>
+                <small class="text-muted">Are you sure you want to permanently remove this device?</small>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-4">
+                    <dt class="col-sm-4 text-muted">Device Code</dt>
+                    <dd class="col-sm-8 font-monospace fw-bold">@Model.Code</dd>
+
+                    <dt class="col-sm-4 text-muted">Device Name</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.Name</dd>
+
+                    <dt class="col-sm-4 text-muted">Category</dt>
+                    <dd class="col-sm-8">@Model.Category?.Name</dd>
+
+                    <dt class="col-sm-4 text-muted">Status</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Status == DeviceManagement.Models.DeviceStatus.InUse)
+                        {
+                            <span class="badge badge-inuse">In use</span>
+                        }
+                        else if (Model.Status == DeviceManagement.Models.DeviceStatus.Broken)
+                        {
+                            <span class="badge badge-broken">Broken</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-maintenance">Under maintenance</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">Date of Entry</dt>
+                    <dd class="col-sm-8">@Model.EntryDate.ToString("yyyy-MM-dd")</dd>
+
+                    <dt class="col-sm-4 text-muted">Assigned User</dt>
+                    <dd class="col-sm-8">@(Model.User?.FullName ?? "— Unassigned —")</dd>
+                </dl>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i> Confirm Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

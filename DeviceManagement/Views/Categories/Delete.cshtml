@@ -1,0 +1,49 @@
+@model DeviceManagement.Models.DeviceCategory
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm border-top border-danger border-4">
+            <div class="card-header bg-white py-3 border-0">
+                <h4 class="fw-bold text-danger mb-0"><i class="bi bi-trash me-2"></i>Delete Category</h4>
+                <small class="text-muted">Are you sure you want to delete this device category?</small>
+            </div>
+            <div class="card-body">
+                @if (Model.Devices.Any())
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Warning:</strong> This category contains <strong>@Model.Devices.Count</strong> device(s). You must remove or reassign all devices before deleting this category.
+                    </div>
+                }
+
+                <dl class="row mb-4">
+                    <dt class="col-sm-4 text-muted">Category Name</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.Name</dd>
+
+                    <dt class="col-sm-4 text-muted">Description</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Description) ? "—" : Model.Description)</dd>
+
+                    <dt class="col-sm-4 text-muted">Total Devices</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-secondary">@Model.Devices.Count device(s)</span>
+                    </dd>
+                </dl>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger" @(Model.Devices.Any() ? "disabled" : "")>
+                            <i class="bi bi-trash me-1"></i> Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

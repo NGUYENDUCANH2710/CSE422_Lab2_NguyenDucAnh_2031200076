@@ -1,0 +1,55 @@
+@model DeviceManagement.Models.User
+@{
+    ViewData["Title"] = $"Delete User - {Model.FullName}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm border-top border-danger border-4">
+            <div class="card-header bg-white py-3 border-0">
+                <h4 class="fw-bold text-danger mb-0"><i class="bi bi-person-x me-2"></i>Delete User</h4>
+                <small class="text-muted">Are you sure you want to remove this user from the system?</small>
+            </div>
+            <div class="card-body">
+                @if (Model.Devices.Any())
+                {
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Notice:</strong> This user currently has <strong>@Model.Devices.Count</strong> assigned device(s). Deleting the user will unassign these devices without deleting the equipment.
+                    </div>
+                }
+
+                <dl class="row mb-4">
+                    <dt class="col-sm-4 text-muted">Full Name</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.FullName</dd>
+
+                    <dt class="col-sm-4 text-muted">Email</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4 text-muted">Phone Number</dt>
+                    <dd class="col-sm-8">@Model.PhoneNumber</dd>
+
+                    <dt class="col-sm-4 text-muted">Department</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Department) ? "—" : Model.Department)</dd>
+
+                    <dt class="col-sm-4 text-muted">Assigned Devices</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-secondary">@Model.Devices.Count device(s)</span>
+                    </dd>
+                </dl>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i> Confirm Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
